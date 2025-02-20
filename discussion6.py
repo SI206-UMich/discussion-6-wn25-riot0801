@@ -1,6 +1,6 @@
 import unittest
 import os
-
+import csv
 
 def load_csv(f):
     '''
@@ -18,6 +18,17 @@ def load_csv(f):
     base_path = os.path.abspath(os.path.dirname(__file__))
     full_path = os.path.join(base_path, f)
     # use this 'full_path' variable as the file that you open
+    dict = {}
+    with open(full_path, mode='r', newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            month = row['Month']  
+            for year in row.keys():
+                if year != 'Month':  # Skip the 'Month' column
+                    if year not in dict:
+                        dict[year] = {}
+                    dict[year][month] = row[year] 
+    return dict
 
 def get_annual_max(d):
     '''
@@ -31,6 +42,22 @@ def get_annual_max(d):
     Note: Don't strip or otherwise modify strings. Do not change datatypes except where necessary.
         You'll have to change vals to int to compare them. 
     '''
+    max = []
+    for year, months in d.items():
+        max_val = -1  
+        max_month = None
+        
+        for month, val in months.items():
+            val_int = int(val)  
+            if val_int > max_val:
+                max_val = val_int
+                max_month = month
+        
+        # Append the result as a tuple (year, month, max_val)
+        max.append((year, max_month, max_val))
+    
+    return max
+
     pass
 
 def get_month_avg(d):
